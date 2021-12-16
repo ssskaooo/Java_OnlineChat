@@ -2,7 +2,7 @@ package com.geekbrains.test;
 
 import com.geekbrains.lesson1.part1.Document;
 
-public class ExampleProtectedSecond extends Document {
+public class ExampleStaticField extends Document {
 
     public static void main(String[] args) {
         A a = new A();
