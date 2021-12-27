@@ -1,4 +1,4 @@
-package com.geekbrains.test;
+package com.geekbrains.lesson1.test;
 
 import com.geekbrains.lesson1.part1.Document;
 
