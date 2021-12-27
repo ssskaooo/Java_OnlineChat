@@ -1,13 +1,15 @@
 package com.geekbrains.lesson3;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
 public class PersonExample {
 
     public static void main(String[] args) {
-        Set<Person> personSet = new TreeSet<>(Comparator.comparingInt(Person::getAge));
+//        Set<Person> personSet = new TreeSet<>(Comparator.comparingInt(Person::getAge));
+        Set<Person> personSet = new HashSet<>();
 
         Person oleg = new Person("Oleg", 30);
         Person nikolay = new Person("Alexey", 35);
