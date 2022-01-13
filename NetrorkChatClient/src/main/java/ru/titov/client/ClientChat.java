@@ -16,8 +16,6 @@ import java.io.IOException;
 
 public class ClientChat extends Application {
 
-    public static final String SERVER_HOST = "localhost";
-    public static final int SERVER_PORT = 8189;
     public static final String CONNECTION_ERROR_MESSAGE = "Невозможно установить сетевое соединение";
 
     private Stage primaryStage;
