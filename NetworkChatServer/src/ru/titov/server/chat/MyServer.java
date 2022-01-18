@@ -1,6 +1,5 @@
 package ru.titov.server.chat;
 
-import ru.titov.clientserver.Command;
 import ru.titov.server.chat.auth.AuthService;
 
 import java.io.IOException;
@@ -37,37 +36,19 @@ public class MyServer {
         clientHandler.handle();
     }
 
-    public synchronized void broadcastMessage(String message, ClientHandler sender) throws IOException {
-        for (ClientHandler client : clients) {
+    public void broadcastMessage(String message, ClientHandler sender) throws IOException {
+        for(ClientHandler client : clients) {
             if (client != sender) {
-                client.sendCommand(Command.clientMessageCommand(sender.getUsername(), message));
+                client.sendMessage(message);
             }
         }
     }
 
-    public synchronized void sendPrivateMessage(ClientHandler sender, String recipient, String privateMessage) throws IOException {
-        for (ClientHandler client : clients) {
-            if (client != sender && client.getUsername().equals(recipient)) {
-                client.sendCommand(Command.clientMessageCommand(sender.getUsername(), privateMessage));
-                break;
-            }
-        }
-    }
-
-    public synchronized boolean isUsernameBusy(String username) {
-        for (ClientHandler client : clients) {
-            if (client.getUsername().equals(username)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public synchronized void subscribe(ClientHandler clientHandler) {
+    public void subscribe(ClientHandler clientHandler) {
         this.clients.add(clientHandler);
     }
 
-    public synchronized void unsubscribe(ClientHandler clientHandler) {
+    public void unsubscribe(ClientHandler clientHandler) {
         this.clients.remove(clientHandler);
     }
 
