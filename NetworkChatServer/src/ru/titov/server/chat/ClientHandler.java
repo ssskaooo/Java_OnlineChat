@@ -34,7 +34,7 @@ public class ClientHandler {
                 readMessages();
             } catch (IOException e) {
                 System.err.println("Failed to process message from client");
-//                e.printStackTrace();
+                e.printStackTrace();
             } finally {
                 try {
                     closeConnection();

@@ -88,9 +88,9 @@ public class ClientChat extends Application {
 
     public void switchToMainChatWindow(String username) {
         getChatStage().setTitle(username);
+        getChatController().initializeMessageHandler();
         getAuthController().close();
         getAuthStage().close();
-        getChatController().initializeMessageHandler();
     }
 
     public void showErrorDialog(String message) {

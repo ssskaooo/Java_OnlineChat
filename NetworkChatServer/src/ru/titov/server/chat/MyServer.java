@@ -61,7 +61,7 @@ public class MyServer {
     public synchronized void sendPrivateMessage(ClientHandler sender, String recipient, String privateMessage) throws IOException {
         for (ClientHandler client : clients) {
             if (client != sender && client.getUserName().equals(recipient)) {
-                client.sendCommand(Command.privateMessageCommand(sender.getUserName(), privateMessage));
+                client.sendCommand(Command.clientMessageCommand(sender.getUserName(), privateMessage));
                 break;
             }
         }
@@ -69,10 +69,24 @@ public class MyServer {
 
     public synchronized void subscribe(ClientHandler clientHandler) throws IOException {
         clients.add(clientHandler);
+        notifyClientUserListUpdated();
     }
 
     public synchronized void unsubscribe(ClientHandler clientHandler) throws IOException {
         clients.remove(clientHandler);
+        notifyClientUserListUpdated();
+    }
+
+    private void notifyClientUserListUpdated() throws IOException {
+        List<String> userListOnline = new ArrayList<>();
+
+        for (ClientHandler client : clients) {
+            userListOnline.add(client.getUserName());
+        }
+
+        for (ClientHandler client : clients) {
+            client.sendCommand(Command.updateUserListCommand(userListOnline));
+        }
     }
 }
 

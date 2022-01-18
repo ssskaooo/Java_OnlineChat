@@ -1,5 +1,6 @@
 package ru.titov.client.controllers;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -12,30 +13,19 @@ import ru.titov.client.model.ReadCommandListener;
 import ru.titov.clientserver.Command;
 import ru.titov.clientserver.CommandType;
 import ru.titov.clientserver.commands.ClientMessageCommandData;
+import ru.titov.clientserver.commands.UpdateUserListCommandData;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.List;
 
 public class ClientController {
-
-    private static final List<String> USERS_TEST_DATA = List.of(
-            "username1",
-            "username2",
-            "username3");
-
     @FXML private TextArea textArea;
     @FXML private TextField textField;
     @FXML private Button sendButton;
     @FXML public ListView<String> userList;
 
     private ClientChat application;
-
-    @FXML
-    public void initialize() {
-        userList.setItems(FXCollections.observableArrayList(USERS_TEST_DATA));
-    }
 
     public void sendMessage() {
         String message = textField.getText().trim();
@@ -91,9 +81,16 @@ public class ClientController {
             @Override
             public void processReceivedCommand(Command command) {
                 if (command.getType() == CommandType.CLIENT_MESSAGE) {
-                    System.out.println("Client Message");
                     ClientMessageCommandData data = (ClientMessageCommandData) command.getData();
                     appendMessageToChat(data.getSender(), data.getMessage());
+                } else if (command.getType() == CommandType.UPDATE_USER_LIST) {
+                    UpdateUserListCommandData data = (UpdateUserListCommandData) command.getData();
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            userList.setItems(FXCollections.observableList(data.getUsers()));
+                        }
+                    });
                 }
             }
         });
