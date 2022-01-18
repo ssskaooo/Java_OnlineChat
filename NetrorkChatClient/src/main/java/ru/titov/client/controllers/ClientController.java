@@ -1,18 +1,29 @@
-package ru.titov.client;
+package ru.titov.client.controllers;
 
-import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import ru.titov.client.ClientChat;
+import ru.titov.client.model.Network;
+import ru.titov.client.model.ReadCommandListener;
+import ru.titov.clientserver.Command;
+import ru.titov.clientserver.CommandType;
+import ru.titov.clientserver.commands.ClientMessageCommandData;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.function.Consumer;
+import java.util.List;
 
 public class ClientController {
+
+    private static final List<String> USERS_TEST_DATA = List.of(
+            "username1",
+            "username2",
+            "username3");
 
     @FXML private TextArea textArea;
     @FXML private TextField textField;
@@ -20,6 +31,11 @@ public class ClientController {
     @FXML public ListView<String> userList;
 
     private ClientChat application;
+
+    @FXML
+    public void initialize() {
+        userList.setItems(FXCollections.observableArrayList(USERS_TEST_DATA));
+    }
 
     public void sendMessage() {
         String message = textField.getText().trim();
@@ -35,8 +51,13 @@ public class ClientController {
         }
 
         try {
-            message = sender != null ? String.join(": ", sender, message) : message;
-            Network.getInstance().sendMessage(message);
+            if (sender != null) {
+                Network.getInstance().sendPrivateMessage(sender, message);
+            } else {
+                System.out.println("ClientController Network.getInstance().sendMessage(message);");
+                Network.getInstance().sendMessage(message);
+            }
+
         } catch (IOException e) {
             application.showErrorDialog("Ошибка передачи данных по сети");
         }
@@ -66,15 +87,14 @@ public class ClientController {
     }
 
     public void initializeMessageHandler() {
-        Network.getInstance().waitMessages(new Consumer<String>() {
+        Network.getInstance().addReadMessageListener(new ReadCommandListener() {
             @Override
-            public void accept(String message) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        appendMessageToChat("Server", message);
-                    }
-                });
+            public void processReceivedCommand(Command command) {
+                if (command.getType() == CommandType.CLIENT_MESSAGE) {
+                    System.out.println("Client Message");
+                    ClientMessageCommandData data = (ClientMessageCommandData) command.getData();
+                    appendMessageToChat(data.getSender(), data.getMessage());
+                }
             }
         });
     }
