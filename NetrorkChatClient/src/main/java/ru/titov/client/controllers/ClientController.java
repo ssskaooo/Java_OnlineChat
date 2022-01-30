@@ -120,6 +120,6 @@ public class ClientController {
     }
 
     public void about(ActionEvent actionEvent) {
-
+        Dialogs.AboutDialog.INFO.show();
     }
 }
