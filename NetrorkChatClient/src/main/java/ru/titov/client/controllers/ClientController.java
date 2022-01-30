@@ -49,6 +49,7 @@ public class ClientController {
             }
 
         } catch (IOException e) {
+            e.printStackTrace();
             application.showErrorDialog("Ошибка передачи данных по сети");
         }
 
@@ -111,6 +112,7 @@ public class ClientController {
             try {
                 Network.getInstance().changeUsername(result.get());
             } catch (IOException e) {
+                e.printStackTrace();
                 Dialogs.NetworkError.SEND_MESSAGE.show();
             }
 

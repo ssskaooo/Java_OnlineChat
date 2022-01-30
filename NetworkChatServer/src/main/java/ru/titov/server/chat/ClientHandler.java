@@ -79,7 +79,7 @@ public class ClientHandler {
             command = (Command) inputStream.readObject();
         } catch (ClassNotFoundException e) {
             System.err.println("Failed to read Command class");
-//            e.printStackTrace();
+            e.printStackTrace();
         }
 
         return command;
@@ -110,6 +110,7 @@ public class ClientHandler {
                 case PUBLIC_MESSAGE: {
                     PublicMessageCommandData data = (PublicMessageCommandData) command.getData();
                     processMessage(data.getMessage());
+                    break;
                 }
                 case UPDATE_USERNAME: {
                     UpdateUsernameCommandData data = (UpdateUsernameCommandData) command.getData();
