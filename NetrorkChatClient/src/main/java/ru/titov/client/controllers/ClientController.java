@@ -2,12 +2,11 @@ package ru.titov.client.controllers;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import ru.titov.client.ClientChat;
+import ru.titov.client.dialogs.Dialogs;
 import ru.titov.client.model.Network;
 import ru.titov.client.model.ReadCommandListener;
 import ru.titov.clientserver.Command;
@@ -18,6 +17,7 @@ import ru.titov.clientserver.commands.UpdateUserListCommandData;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 public class ClientController {
     @FXML private TextArea textArea;
@@ -94,5 +94,30 @@ public class ClientController {
                 }
             }
         });
+    }
+
+    public void closeChat(ActionEvent actionEvent) {
+        ClientChat.INSTANCE.getChatStage().close();
+    }
+
+    public void changeUserName(ActionEvent actionEvent) {
+        TextInputDialog editDialog = new TextInputDialog();
+        editDialog.setTitle("Изменить юзернейм");
+        editDialog.setHeaderText("Введите новый юзернейм");
+        editDialog.setContentText("Username:");
+
+        Optional<String> result = editDialog.showAndWait();
+        if (result.isPresent()) {
+            try {
+                Network.getInstance().changeUsername(result.get());
+            } catch (IOException e) {
+                Dialogs.NetworkError.SEND_MESSAGE.show();
+            }
+
+        }
+    }
+
+    public void about(ActionEvent actionEvent) {
+
     }
 }

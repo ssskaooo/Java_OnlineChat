@@ -5,6 +5,7 @@ import ru.titov.clientserver.CommandType;
 import ru.titov.clientserver.commands.AuthCommandData;
 import ru.titov.clientserver.commands.PrivateMessageCommandData;
 import ru.titov.clientserver.commands.PublicMessageCommandData;
+import ru.titov.clientserver.commands.UpdateUsernameCommandData;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -109,6 +110,14 @@ public class ClientHandler {
                 case PUBLIC_MESSAGE: {
                     PublicMessageCommandData data = (PublicMessageCommandData) command.getData();
                     processMessage(data.getMessage());
+                }
+                case UPDATE_USERNAME: {
+                    UpdateUsernameCommandData data = (UpdateUsernameCommandData) command.getData();
+                    String newUsername = data.getUsername();
+                    server.getAuthService().updateUsername(userName, newUsername);
+                    userName = newUsername;
+                    server.notifyClientUserListUpdated();
+                    break;
                 }
             }
         }

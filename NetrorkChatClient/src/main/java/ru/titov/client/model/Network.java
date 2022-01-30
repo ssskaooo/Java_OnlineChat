@@ -127,6 +127,10 @@ public class Network {
         listeners.remove(listener);
     }
 
+    public void changeUsername(String newUsername) throws IOException {
+        sendCommand(Command.updateUsernameCommand(newUsername));
+    }
+
     public void close() {
         try {
             connected = false;
