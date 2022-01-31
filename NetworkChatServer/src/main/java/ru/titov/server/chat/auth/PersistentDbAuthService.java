@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class PersistentDbAuthService implements IAuthService {
 
-    private static final String DB_URL = "jdbc:sqlite:C:\\IdeaProjects\\Java2_2021_12\\chatUsers.db";
+    private static final String DB_URL = "jdbc:sqlite:chatUsers.db";
     private Connection connection;
     private PreparedStatement getUsernameStatement;
     private PreparedStatement updateUsernameStatement;
