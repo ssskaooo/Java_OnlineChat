@@ -72,6 +72,7 @@ public class Network {
             socketOutput.writeObject(command);
         } catch (IOException e) {
             System.err.println("Не удалось отправить сообщение на сервер");
+            e.printStackTrace();
             throw e;
         }
     }
@@ -96,6 +97,7 @@ public class Network {
                     }
                 } catch (IOException e) {
                     System.err.println("Не удалось прочитать сообщения от сервера");
+                    e.printStackTrace();
                     close();
                     break;
                 }
@@ -125,6 +127,10 @@ public class Network {
 
     public void removeReadMessageListener(ReadCommandListener listener) {
         listeners.remove(listener);
+    }
+
+    public void changeUsername(String newUsername) throws IOException {
+        sendCommand(Command.updateUsernameCommand(newUsername));
     }
 
     public void close() {
