@@ -21,6 +21,9 @@ import java.util.Date;
 import java.util.Optional;
 
 public class ClientController {
+
+    private static final int LAST_HISTORY_ROWS_NUMBER = 100;
+
     @FXML private TextArea textArea;
     @FXML private TextField textField;
     @FXML private Button sendButton;
@@ -46,7 +49,6 @@ public class ClientController {
             if (sender != null) {
                 Network.getInstance().sendPrivateMessage(sender, message);
             } else {
-                System.out.println("ClientController Network.getInstance().sendMessage(message);");
                 Network.getInstance().sendMessage(message);
             }
 
@@ -95,6 +97,7 @@ public class ClientController {
             public void processReceivedCommand(Command command) {
                 if (chatHistoryService == null) {
                     createChatHistory();
+                    loadChatHistory();
                 }
 
                 if (command.getType() == CommandType.CLIENT_MESSAGE) {
@@ -134,6 +137,13 @@ public class ClientController {
             }
 
         }
+    }
+
+    private void loadChatHistory() {
+//        String rows = chatHistoryService.loadLastRows(LAST_HISTORY_ROWS_NUMBER);
+        String rows = chatHistoryService.loadLastRows2(LAST_HISTORY_ROWS_NUMBER);
+        textArea.clear();
+        textArea.setText(rows);
     }
 
     public void about(ActionEvent actionEvent) {

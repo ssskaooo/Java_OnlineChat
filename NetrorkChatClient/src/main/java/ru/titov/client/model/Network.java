@@ -24,6 +24,7 @@ public class Network {
 
     private final List<ReadCommandListener> listeners = new CopyOnWriteArrayList<>();
     private Thread readMessageProcess;
+    private String currentUsername;
     private boolean connected;
 
     public static Network getInstance() {
@@ -63,7 +64,6 @@ public class Network {
     }
 
     public void sendMessage(String message) throws IOException {
-        System.out.println("send public message");
         sendCommand(Command.publicMessageCommand(message));
     }
 
@@ -141,6 +141,14 @@ public class Network {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getCurrentUsername() {
+        return currentUsername;
+    }
+
+    public void setCurrentUsername(String currentUsername) {
+        this.currentUsername = currentUsername;
     }
 
     public boolean isConnected() {
