@@ -9,6 +9,7 @@ import ru.titov.client.ClientChat;
 import ru.titov.client.dialogs.Dialogs;
 import ru.titov.client.model.Network;
 import ru.titov.client.model.ReadCommandListener;
+import ru.titov.client.service.ChatHistory;
 import ru.titov.clientserver.Command;
 import ru.titov.clientserver.CommandType;
 import ru.titov.clientserver.commands.ClientMessageCommandData;
@@ -20,12 +21,16 @@ import java.util.Date;
 import java.util.Optional;
 
 public class ClientController {
+
+    private static final int LAST_HISTORY_ROWS_NUMBER = 100;
+
     @FXML private TextArea textArea;
     @FXML private TextField textField;
     @FXML private Button sendButton;
     @FXML public ListView<String> userList;
 
     private ClientChat application;
+    private ChatHistory chatHistoryService;
 
     public void sendMessage() {
         String message = textField.getText().trim();
@@ -44,7 +49,6 @@ public class ClientController {
             if (sender != null) {
                 Network.getInstance().sendPrivateMessage(sender, message);
             } else {
-                System.out.println("ClientController Network.getInstance().sendMessage(message);");
                 Network.getInstance().sendMessage(message);
             }
 
@@ -56,7 +60,14 @@ public class ClientController {
         appendMessageToChat("Я", message);
     }
 
+    public void createChatHistory() {
+        this.chatHistoryService = new ChatHistory(Network.getInstance().getCurrentUsername());
+        chatHistoryService.init();
+    }
+
     private void appendMessageToChat(String sender, String message) {
+        String currentText = textArea.getText();
+
         textArea.appendText(DateFormat.getDateTimeInstance().format(new Date()));
         textArea.appendText(System.lineSeparator());
 
@@ -70,6 +81,9 @@ public class ClientController {
         textArea.appendText(System.lineSeparator());
         textField.setFocusTraversable(true);
         textField.clear();
+
+        String newMessage = textArea.getText(currentText.length(), textArea.getLength());
+        chatHistoryService.appendText(newMessage);
     }
 
 
@@ -81,6 +95,11 @@ public class ClientController {
         Network.getInstance().addReadMessageListener(new ReadCommandListener() {
             @Override
             public void processReceivedCommand(Command command) {
+                if (chatHistoryService == null) {
+                    createChatHistory();
+                    loadChatHistory();
+                }
+
                 if (command.getType() == CommandType.CLIENT_MESSAGE) {
                     ClientMessageCommandData data = (ClientMessageCommandData) command.getData();
                     appendMessageToChat(data.getSender(), data.getMessage());
@@ -98,6 +117,7 @@ public class ClientController {
     }
 
     public void closeChat(ActionEvent actionEvent) {
+        chatHistoryService.close();
         ClientChat.INSTANCE.getChatStage().close();
     }
 
@@ -117,6 +137,13 @@ public class ClientController {
             }
 
         }
+    }
+
+    private void loadChatHistory() {
+//        String rows = chatHistoryService.loadLastRows(LAST_HISTORY_ROWS_NUMBER);
+        String rows = chatHistoryService.loadLastRows2(LAST_HISTORY_ROWS_NUMBER);
+        textArea.clear();
+        textArea.setText(rows);
     }
 
     public void about(ActionEvent actionEvent) {
